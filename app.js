@@ -76,10 +76,11 @@ const store = {
   record(matiere, mode, score, total) {
     const d = this.load();
     const k = `${matiere}:${mode}`;
-    if (!d[k]) d[k] = { sessions: 0, meilleur: 0, dernier: 0, totalQ: 0, totalOk: 0 };
+    if (!d[k]) d[k] = { sessions: 0, meilleurPct: 0, dernier: 0, dernierTotal: 0, totalQ: 0, totalOk: 0 };
     d[k].sessions += 1;
     d[k].dernier = score;
-    d[k].meilleur = Math.max(d[k].meilleur, score);
+    d[k].dernierTotal = total;
+    d[k].meilleurPct = Math.max(d[k].meilleurPct, Math.round((100 * score) / total));
     d[k].totalQ += total;
     d[k].totalOk += score;
     this.save(d);
@@ -143,7 +144,7 @@ function renderModes() {
     btn.className = "card";
     btn.innerHTML = `<span class="card-title">${mo.label}</span>
       <span class="desc">${mo.desc}</span>
-      <span class="card-count">${st ? `Dernière session : ${st.dernier}/${SESSION_SIZE} · Meilleur : ${st.meilleur}/${SESSION_SIZE}` : "Jamais joué"}</span>`;
+      <span class="card-count">${st ? `Dernière session : ${st.dernier}/${st.dernierTotal} · Meilleur score : ${st.meilleurPct} %` : "Jamais joué"}</span>`;
     btn.addEventListener("click", () => startSession(mo.id));
     list.appendChild(btn);
   });
@@ -154,7 +155,9 @@ function renderModes() {
 function startSession(mode) {
   state.mode = mode;
   const pool = arretsMatiere(state.matiere);
-  state.session = { questions: pick(pool, SESSION_SIZE), index: 0, score: 0 };
+  // Flashcards : on balaie TOUS les arrêts de la matière (un max de cartes)
+  const questions = mode === "flash" ? shuffle(pool) : pick(pool, SESSION_SIZE);
+  state.session = { questions, index: 0, score: 0 };
   $("#game-mode-label").textContent = `${MATIERES[state.matiere].label} · ${MODES.find((m) => m.id === mode).label}`;
   show("game");
   renderQuestion();
