@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JurisRévise — Droit admin & Obligations</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <button id="btn-home" class="btn ghost hidden">← Accueil</button>
+    <h1 class="brand">⚖️ JurisRévise</h1>
+    <div id="score-chip" class="score-chip hidden"></div>
+  </header>
+
+  <main id="app">
+    <!-- Écran accueil : choix de la matière -->
+    <section id="screen-home" class="screen">
+      <h2>Que veux-tu réviser aujourd'hui ?</h2>
+      <p class="subtitle">Choisis une matière, puis un mode de jeu.</p>
+      <div class="cards">
+        <button class="card card-admin" data-matiere="admin">
+          <span class="card-icon">🏛️</span>
+          <span class="card-title">Droit administratif</span>
+          <span class="card-count" id="count-admin"></span>
+        </button>
+        <button class="card card-oblig" data-matiere="obligations">
+          <span class="card-icon">📜</span>
+          <span class="card-title">Droit des obligations</span>
+          <span class="card-count" id="count-obligations"></span>
+        </button>
+      </div>
+      <div class="stats-box" id="stats-box"></div>
+    </section>
+
+    <!-- Écran choix du mode -->
+    <section id="screen-modes" class="screen hidden">
+      <h2 id="modes-title"></h2>
+      <p class="subtitle">Choisis ton exercice :</p>
+      <div class="cards modes" id="modes-list"></div>
+    </section>
+
+    <!-- Écran de jeu -->
+    <section id="screen-game" class="screen hidden">
+      <div class="game-head">
+        <span id="game-mode-label" class="tag"></span>
+        <span id="game-progress" class="progress-label"></span>
+      </div>
+      <div id="game-area" class="game-area"></div>
+      <div id="feedback" class="feedback hidden"></div>
+      <div class="game-actions">
+        <button id="btn-next" class="btn primary hidden">Suivant →</button>
+        <button id="btn-quit" class="btn ghost">Quitter</button>
+      </div>
+    </section>
+
+    <!-- Écran de fin -->
+    <section id="screen-end" class="screen hidden">
+      <h2>🎉 Session terminée !</h2>
+      <div id="end-stats" class="end-stats"></div>
+      <div class="row">
+        <button id="btn-retry" class="btn primary">Rejouer</button>
+        <button id="btn-back-modes" class="btn">Changer de mode</button>
+        <button id="btn-back-home" class="btn ghost">Accueil</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
