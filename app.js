@@ -4,6 +4,26 @@
 /* ---------- utilitaires ---------- */
 const $ = (sel) => document.querySelector(sel);
 
+function showFatal(msg) {
+  let f = $("#fatal");
+  if (!f) {
+    f = document.createElement("div");
+    f.id = "fatal";
+    document.body.prepend(f);
+  }
+  f.textContent = "⚠️ " + msg;
+  f.classList.remove("hidden");
+}
+window.addEventListener("error", (e) => showFatal(e.message + " — rechargez la page (Ctrl+F5) si le problème persiste."));
+
+if (typeof ARRETS === "undefined" || typeof MATIERES === "undefined" || typeof MODES === "undefined") {
+  showFatal("Le fichier data.js n'a pas été chargé : ouvrez index.html depuis le dossier complet de l'app (data.js doit être à côté de index.html).");
+} else {
+  init();
+}
+
+function init() {
+
 function shuffle(arr) {
   const a = arr.slice();
   for (let i = a.length - 1; i > 0; i--) {
@@ -37,14 +57,22 @@ function normaliserNom(s) {
     .replace(/\s+/g, " ").trim();
 }
 
-/* ---------- progression (localStorage) ---------- */
+/* ---------- progression (localStorage, avec repli mémoire si bloqué) ---------- */
+const memoire = {};
+function lireBrut() {
+  try { return localStorage.getItem("jurisrevise-v1"); }
+  catch { return memoire["jurisrevise-v1"] ?? null; }
+}
+function ecrireBrut(v) {
+  memoire["jurisrevise-v1"] = v;
+  try { localStorage.setItem("jurisrevise-v1", v); } catch { /* navigation privée : on garde la mémoire vive */ }
+}
 const store = {
-  key: "jurisrevise-v1",
   load() {
-    try { return JSON.parse(localStorage.getItem(this.key)) || {}; }
+    try { return JSON.parse(lireBrut()) || {}; }
     catch { return {}; }
   },
-  save(data) { localStorage.setItem(this.key, JSON.stringify(data)); },
+  save(data) { ecrireBrut(JSON.stringify(data)); },
   record(matiere, mode, score, total) {
     const d = this.load();
     const k = `${matiere}:${mode}`;
@@ -194,12 +222,13 @@ function renderQCM(area, a) {
   options.forEach((opt) => {
     const b = document.createElement("button");
     b.className = "choice";
+    b.dataset.id = opt.id;
     b.textContent = `${opt.nom} (${annee(opt.date)})`;
     b.addEventListener("click", () => {
       const ok = opt.id === a.id;
       box.querySelectorAll(".choice").forEach((c) => {
         c.disabled = true;
-        if (c.textContent.startsWith(a.nom)) c.classList.add("correct");
+        if (c.dataset.id === a.id) c.classList.add("correct");
       });
       if (!ok) b.classList.add("wrong");
       if (ok) state.session.score++;
@@ -410,3 +439,4 @@ $("#btn-back-modes").addEventListener("click", renderModes);
 $("#btn-back-home").addEventListener("click", renderHome);
 
 renderHome();
+}

@@ -14,6 +14,15 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+#fatal {
+  background: #d64545;
+  color: #fff;
+  padding: 12px 18px;
+  font-size: .95rem;
+  text-align: center;
+  position: sticky; top: 0; z-index: 100;
+}
+
 body {
   font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
   background: radial-gradient(1200px 600px at 70% -10%, #1c2742 0%, var(--bg) 60%);
